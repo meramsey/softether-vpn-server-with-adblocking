@@ -1,31 +1,21 @@
 [Unit]
 Description=SoftEther VPN Server
-After=network.target auditd.service
+After=network.target
 
 [Service]
 Type=forking
 ExecStart=/usr/local/vpnserver/vpnserver start
 ExecStop=/usr/local/vpnserver/vpnserver stop
 ExecStartPost=/bin/sleep 05
-ExecStartPost=/bin/sh /root/softether-iptables.sh
+ExecStartPost=/bin/bash /root/softether-iptables.sh
 ExecStartPost=/bin/sleep 03
 ExecStartPost=/bin/systemctl start dnsmasq.service
 ExecReload=/bin/sleep 05
-ExecReload=/bin/sh /root/softether-iptables.sh
+ExecReload=/bin/bash /root/softether-iptables.sh
 ExecReload=/bin/sleep 03
 ExecReload=/bin/systemctl restart dnsmasq.service
 ExecStopPost=/bin/systemctl stop dnsmasq.service
-KillMode=process
-Restart=on-failure
-
-# Hardening
-PrivateTmp=yes
-ProtectHome=yes
-ProtectSystem=full
-ReadOnlyDirectories=/
-ReadWriteDirectories=-/usr/local/vpnserver
-CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_BROADCAST CAP_NET_RAW CAP_SYS_NICE CAP_SYSLOG CAP_SETUID
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
-
