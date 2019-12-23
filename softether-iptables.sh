@@ -2,9 +2,7 @@
 ##########################################################################################################################################
 ### Configuration
 #############################
-#Source VPN Node's static IP and network adapter from file.
-#source /root/softether_iptables_conf.sh
-
+#
 #DAEMON=/usr/local/vpnserver/vpnserver           # Change this only if you have installed the vpnserver to an alternate location.
 #LOCK=/var/lock/vpnserver                        # No need to edit this.
 TAP_ADDR=192.168.30.1                              # Main IP of your TAP interface
@@ -15,17 +13,18 @@ VPN_SUBNET=192.168.30.0/24                         # Virtual IP subnet you want 
 #NET_INTERFACE=ens3                              # Your network adapter that connects you to the world.In OpenVZ this is venet0 for example.
 
 #dynamically detect NET_INTERFACE
-shopt -s extglob; NET_INTERFACE=$(ip link | awk -F: '$0 !~ "lo|vir|wl|tap_soft|^[^0-9]"{print $2;getline}'); NET_INTERFACE="${NET_INTERFACE##*( )}"; shopt -u extglob;
+NET_INTERFACE="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
 
 #VPNEXTERNALIP=1.2.3.4                  # Your machines external IPv4 address. 
-VPNEXTERNALIP=$(hostname -I | cut -d ' ' -f 1) # Write down you IP or one of the IP adresses if you have more than one.
+VPNEXTERNALIP=$(wget -qO- -t1 -T2 ipv4.icanhazip.com) # Write down you IP or one of the IP adresses if you have more than one.
                                                 # Warning! NAT Machine users, here write the local IP address of your VPS instead of the external IP.
 #Harcoded option
 #IPV6_ADDR=#IPV6_ADDR=2t00:1ba7:001b:0007:0000:0000:0000:0001      # You can also assign this as DNS server in dnsmasq config.
 #IPV6_SUBNET=2t00:1ba7:1b:7::/64               # Used to assign IPv6 to connecting clients. Remember to use the same subnet in dnsmasq.conf
 
 #dynamically detect Ipv6
-IPV6_ADDR=$(dig -6 @resolver1.opendns.com -t any myip.opendns.com +short); #echo $IPV6_ADDR;
+#IPV6_ADDR=$(dig -6 @resolver1.opendns.com -t any myip.opendns.com +short); #echo $IPV6_ADDR;
+IPV6_ADDR=$(wget -qO- -t1 -T2 ipv6.icanhazip.com)
 IPV6_SUBNET=$(/sbin/ip addr | grep 'state UP' -A4 | grep inet6 | awk '{print $2}'| grep -v 'fe80'); #echo $IPV6_SUBNET;
 
 #############################
