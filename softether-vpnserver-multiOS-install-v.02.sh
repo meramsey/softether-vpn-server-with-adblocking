@@ -93,7 +93,7 @@ wget -O /etc/dnsmasq.conf https://gitlab.com/mikeramsey/softether-vpn-server-wit
 wget -O /etc/systemd/system/dnsmasq.service.d/clearlease.conf https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/dnsmasq.service_clearlease.conf
 
 #grab current nic interface
-NET_INTERFACE="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
+NET_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
 
 echo "update interface in /etc/dnsmasq.conf to current: $NET_INTERFACE"
 sed -i s/ens3/"$NET_INTERFACE"/g /etc/dnsmasq.conf
