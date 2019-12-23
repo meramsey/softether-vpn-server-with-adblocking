@@ -13,7 +13,7 @@ VPN_SUBNET=192.168.30.0/24                         # Virtual IP subnet you want 
 #NET_INTERFACE=ens3                              # Your network adapter that connects you to the world.In OpenVZ this is venet0 for example.
 
 #dynamically detect NET_INTERFACE
-NET_INTERFACE="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
+NET_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
 
 #VPNEXTERNALIP=1.2.3.4                  # Your machines external IPv4 address. 
 VPNEXTERNALIP=$(wget -qO- -t1 -T2 ipv4.icanhazip.com) # Write down you IP or one of the IP adresses if you have more than one.
