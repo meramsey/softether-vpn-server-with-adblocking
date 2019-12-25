@@ -32,8 +32,8 @@ IPV6_SUBNET=$(/sbin/ip addr | grep 'state UP' -A4 | grep inet6 | awk '{print $2}
 ##########################################################################################################################################
 
 #Flush Current rules
-iptables -F && iptables -X
-ip6tables -F && ip6tables -X
+iptables -F && iptables -X && iptables -t nat -F
+ip6tables -F && ip6tables -X && ip6tables -t nat -F
 #######################################################################################
 # Base SoftEther VPN Rules for IPTables. You can remove and use these iptables-persistent if you want 
 #######################################################################################
