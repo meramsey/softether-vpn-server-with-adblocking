@@ -82,6 +82,4 @@ source /root/client_ports_iptables_conf.sh
 FILE="/root/softwire/wireguard_iptables_up.sh"     
 if [ -f $FILE ]; then
    source /root/softwire/wireguard_iptables_up.sh
-else
-   #echo "File $FILE does not exist."
 fi
