@@ -7,7 +7,7 @@ YUM_CMD=$(which yum)
 APT_GET_CMD=$(which apt-get)
 
 if [[ ! -z $YUM_CMD ]]; then
-   yum update -y && yum upgrade -y && yum groupinstall -y "Development Tools" && yum install -y epel-release && yum install -y htop atop curl wget dnsmasq nano net-tools
+   yum update -y && yum upgrade -y && yum groupinstall -y "Development Tools" && yum install -y epel-release && yum install -y htop atop curl wget dnsmasq nano net-tools jq
    ZONE=$(firewall-cmd --get-default-zone)
    firewall-cmd --zone=$ZONE --add-service=openvpn --permanent
    firewall-cmd --zone=$ZONE --add-service=ipsec --permanent
@@ -30,7 +30,7 @@ if [[ ! -z $YUM_CMD ]]; then
    restorecon /var/log/dnsmasq.log
 elif [[ ! -z $APT_GET_CMD ]]; then
    apt-get -y update && apt-get -y upgrade
-   apt-get install -y build-essential dnsmasq htop atop python-simplejson python-minimal
+   apt-get install -y build-essential dnsmasq htop atop python-simplejson python-minimal jq
    #disable and stop UFW firewall
    ufw disable; service ufw stop;
 else
