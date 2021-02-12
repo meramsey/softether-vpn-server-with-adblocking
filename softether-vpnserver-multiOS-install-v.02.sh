@@ -99,7 +99,7 @@ echo "update interface in /etc/dnsmasq.conf to current: $NET_INTERFACE"
 sed -i s/ens3/"$NET_INTERFACE"/g /etc/dnsmasq.conf
 
 #ad blocking hosts
-wget -O /root/updateHosts.sh https://raw.githubusercontent.com/nomadturk/vpn-adblock/master/updateHosts.sh; chmod a+x /root/updateHosts.sh && bash /root/updateHosts.sh;
+wget -O /root/updateHosts.sh https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/-/raw/master/updateHosts.sh; chmod a+x /root/updateHosts.sh && bash /root/updateHosts.sh;
 
 echo "Install adblocking cron"
 command="/root/updateHosts.sh >/dev/null 2>&1"
