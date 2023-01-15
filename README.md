@@ -5,4 +5,6 @@ SoftEther VPN Server install for Ubuntu/Debian/Centos includes adblocking dnsmas
 https://whattheserver.com/softether-vpnserver-with-port-forwarding/  
 https://whattheserver.com/softether-vpn-install-script_for-ubuntu/  
 
-## Latest install script is the `softether-vpnserver-multiOS-install-v.02.sh`
+Latest install script is: `softether-vpnserver-multiOS-install-v.02.sh`
+
+
