@@ -30,7 +30,7 @@ if [[ ! -z $YUM_CMD ]]; then
    restorecon /var/log/dnsmasq.log
 elif [[ ! -z $APT_GET_CMD ]]; then
    apt-get -y update && apt-get -y upgrade
-   apt-get install -y build-essential dnsmasq htop atop python-simplejson python-minimal jq
+   apt-get install -y dnsmasq net-tools htop atop python3-simplejson python3-minimal curl wget jq libpam-radius-auth traceroute whois build-essential gnupg2 gcc make
    #disable and stop UFW firewall
    ufw disable; service ufw stop;
 else
@@ -70,7 +70,7 @@ chmod 700 vpncmd
 chmod 700 vpnserver
 
 # grab Softether vpn server.config template
-wget -O /usr/local/vpnserver/vpn_server.config https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/vpn_server.config
+wget -O /usr/local/vpnserver/vpn_server.config https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/vpn_server.config
 
 #Generate random MAC for softether Tap Adapter vpn_server.config
 export MAC=$(printf '%.2x\n' "$(shuf -i 0-281474976710655 -n 1)" | sed -r 's/(..)/\1:/g' | cut -d: -f -6 |  tr '[:lower:]' '[:upper:]')
@@ -80,17 +80,17 @@ echo $MAC
 sed -i "s/5E-BD-34-92-20-30/$MAC/g" /usr/local/vpnserver/vpn_server.config
 
 #grab systemd unit file for SoftEther Service
-wget -O /lib/systemd/system/vpnserver.service https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/vpnserver.service
+wget -O /lib/systemd/system/vpnserver.service https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/vpnserver.service
 
 
 
 #Setup DNSMasq
 
 #grab dnsmasq conf
-wget -O /etc/dnsmasq.conf https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/dnsmasq.conf
+wget -O /etc/dnsmasq.conf https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/dnsmasq.conf
 
 #To ensure clients leases are cleared if upgrading from standard VPN to say perfect dark have setup a dropin systemd unit file to clear leases on start/restart of dnsmasq file.
-wget -O /etc/systemd/system/dnsmasq.service.d/clearlease.conf https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/dnsmasq.service_clearlease.conf
+wget -O /etc/systemd/system/dnsmasq.service.d/clearlease.conf https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/dnsmasq.service_clearlease.conf
 
 #grab current nic interface
 NET_INTERFACE=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
@@ -99,7 +99,7 @@ echo "update interface in /etc/dnsmasq.conf to current: $NET_INTERFACE"
 sed -i s/ens3/"$NET_INTERFACE"/g /etc/dnsmasq.conf
 
 #ad blocking hosts
-wget -O /root/updateHosts.sh https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/-/raw/master/updateHosts.sh; chmod a+x /root/updateHosts.sh && bash /root/updateHosts.sh;
+wget -O /root/updateHosts.sh https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/updateHosts.sh; chmod a+x /root/updateHosts.sh && bash /root/updateHosts.sh;
 
 echo "Install adblocking cron"
 command="/root/updateHosts.sh >/dev/null 2>&1"
@@ -107,10 +107,17 @@ job="0 0 * * * $command"
 cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab -
 
 
+wget -O /root/softetherlogpurge.sh https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/softetherlogpurge.sh; chmod a+x /root/softetherlogpurge.sh
+
 echo "Install Log purging cron"
-command2="find /usr/local/vpnserver/ -name '*.log' -delete; > /var/log/dnsmasq.log; >/dev/null 2>&1"
-job2="* * * * * $command2"
+command="/root/softetherlogpurge.sh >/dev/null 2>&1"
+job2="0 0 * * * $command2"
 cat <(fgrep -i -v "$command2" <(crontab -l)) <(echo "$job2") | crontab -
+
+# echo "Install Log purging cron"
+# command2="find /usr/local/vpnserver/ -name '*.log' -delete; > /var/log/dnsmasq.log; >/dev/null 2>&1"
+# job2="* * * * * $command2"
+# cat <(fgrep -i -v "$command2" <(crontab -l)) <(echo "$job2") | crontab -
 
 
 echo "Ipv4/IPv6 forwarding enabling /etc/sysctl.conf"
@@ -136,12 +143,12 @@ sysctl -f
 #Grab base Sofether Iptables rules
 
 #softether-iptables base rules
-wget -O /root/softether-iptables.sh https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/softether-iptables.sh && chmod +x /root/softether-iptables.sh
+wget -O /root/softether-iptables.sh https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/softether-iptables.sh && chmod +x /root/softether-iptables.sh
 
 #softether client_ports_iptables_conf.sh
-wget -O /root/client_ports_iptables_conf.sh https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/client_ports_iptables_conf.sh  && chmod +x /root/client_ports_iptables_conf.sh
+wget -O /root/client_ports_iptables_conf.sh https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/client_ports_iptables_conf.sh  && chmod +x /root/client_ports_iptables_conf.sh
 
-#Make ethers file for dnsmasq to do static assignments based on Mac Addresses: See example file https://gitlab.com/mikeramsey/softether-vpn-server-with-adblocking/raw/master/ethers
+#Make ethers file for dnsmasq to do static assignments based on Mac Addresses: See example file https://github.com/meramsey/softether-vpn-server-with-adblocking/raw/master/ethers
 touch /etc/ethers
 
 #To enable, start,and check status of the systemd dnsmasq dhcp service.
