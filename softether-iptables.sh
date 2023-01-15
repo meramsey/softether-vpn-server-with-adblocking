@@ -79,7 +79,7 @@ ip6tables -t nat -A POSTROUTING -o tap_soft -j MASQUERADE
 source /root/client_ports_iptables_conf.sh
 
 # Source Wireguard IP iptables rule if exists
-FILE="/root/softwire/wireguard_iptables_up.sh"     
-if [ -f $FILE ]; then
-   source /root/softwire/wireguard_iptables_up.sh
-fi
+#FILE="/root/softwire/wireguard_iptables_up.sh"     
+#if [ -f $FILE ]; then
+#   source /root/softwire/wireguard_iptables_up.sh
+#fi
